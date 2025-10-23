@@ -1,5 +1,5 @@
 import sqlite3
-from modelos import Proyecto, Tarea
+from .modelos import Proyecto, Tarea
 import os
 
 DATABASE_NAME = "tareas.db"
@@ -82,3 +82,33 @@ class DBManager:
         ]
         return proyectos
 
+    def obtener_tareas(self, estado=None):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        sql = "SELECT * FROM tareas"
+        params = []
+
+        if estado:
+            sql += " WHERE estado = ?"
+            params.append(estado)
+        
+        sql += " ORDER BY fecha_limite ASC"
+
+        cursor.execute(sql, params)
+        filas = cursor.fetchall()
+        conn.close()
+
+        tareas = []
+        for fila in filas:
+            t = Tarea(
+                titulo=fila['titulo'],
+                fecha_limite=fila['fecha_limite'],
+                prioridad=fila['prioridad'],
+                estado=fila['estado'],
+                proyecto_id=fila['proyecto_id'],
+                id=fila['id'],
+                descripcion=fila['descripcion']
+            )
+            tareas.append(t)
+        return tareas
