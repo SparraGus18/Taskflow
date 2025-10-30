@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>TaskFlow - Tareas Pendientes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: radial-gradient(circle at top left, #1a1a1a, #0d0d0d);
+            color: #e0e0e0;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #121212;
+            padding: 40px 50px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+        }
+
+        h1 {
+            text-align: center;
+            color: #64b5f6;
+            font-weight: 600;
+            margin-bottom: 25px;
+            letter-spacing: 0.5px;
+        }
+
+        .add-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #2196f3, #0d47a1);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 8px rgba(33, 150, 243, 0.5);
+        }
+
+        .add-link:hover {
+            background: linear-gradient(135deg, #42a5f5, #1565c0);
+            transform: translateY(-2px);
+            box-shadow: 0 0 12px rgba(33, 150, 243, 0.7);
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 25px;
+        }
+
+        .task-item {
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+            transition: all 0.25s ease;
+        }
+
+        .task-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 14px rgba(33, 150, 243, 0.15);
+        }
+
+        .task-info {
+            flex-grow: 1;
+        }
+
+        .task-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .priority-baja { color: #81c784; }   /* Verde suave */
+        .priority-media { color: #ffeb3b; }  /* Amarillo */
+        .priority-alta { color: #ff9800; }   /* Naranja */
+        .priority-urgente { color: #ef5350; } /* Rojo */
+        
+        small {
+            color: #999;
+        }
+
+        .action-button {
+            background-color: #2196f3;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .action-button:hover {
+            background-color: #1565c0;
+            box-shadow: 0 0 10px rgba(33, 150, 243, 0.6);
+            transform: translateY(-2px);
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #333;
+            margin: 30px 0;
+        }
+
+        h2 {
+            color: #64b5f6;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        ul {
+            padding-left: 18px;
+        }
+
+        ul li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Tareas Pendientes</h1>
+
+        <a href="{{ url_for('crear_tarea_web') }}" class="add-link">➕ Crear Nueva Tarea</a>
+        
+        <ul class="task-list">
+            {% for tarea in tareas %}
+            <li class="task-item">
+                <div class="task-info">
+                    <div class="task-title">
+                        {{ tarea._titulo }} (Prioridad: 
+                        <span class="priority-{{ tarea._prioridad.lower() }}">
+                            {{ tarea._prioridad }}
+                        </span>)
+                    </div>
+                    <small>
+                        🗓 Límite: {{ tarea._fecha_limite }} | 
+                        📁 Proyecto: {{ tarea._proyecto_id }}
+                    </small>
+                </div>
+                
+                <a href="{{ url_for('completar_tarea', tarea_id=tarea._id) }}" class="action-button">✅ Completar</a>
+            </li>
+            {% else %}
+            <li class="task-item">✨ No tienes tareas pendientes. ¡Hora de crear una!</li>
+            {% endfor %}
+        </ul>
+        
+        <hr>
+        
+        <h2>📂 Proyectos Activos</h2>
+        <ul>
+            {% for proyecto in proyectos %}
+            <li>[{{ proyecto._id }}] {{ proyecto._nombre }} — <span style="color:#90caf9;">{{ proyecto._estado }}</span></li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
